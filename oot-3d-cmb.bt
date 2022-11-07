@@ -1,0 +1,102 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    char    magic[4];
+    uint    size;    uint    version;
+    uint    unused;    char    modelName[16];
+    uint    vertexCount;
+    uint    sklChunkPointer;
+    uint    matsChunkPointer;
+    uint    texChunkPointer;
+    uint    sklmChunkPointer;
+    uint    lutsChunkPointer;
+    uint    vatrChunkPointer;
+    uint    indicesDataPointer;
+    uint    textureDataPointer;
+} CMBCHUNK <bgcolor=cLtGray>;
+
+typedef struct {
+    float x;
+    float y;
+    float z;
+} VECTOR3;
+
+typedef struct {
+    byte    id;
+    byte    unknown;
+    short   parentId;
+    VECTOR3 scale;
+    VECTOR3 rotation;
+    VECTOR3 translation;
+} BONE <bgcolor=0xFF0000>;
+
+typedef struct {
+    char    magic[4];    uint    size;    uint    boneCount;
+    uint    unknown;
+
+    struct {    
+        local int bone_i = 0;
+        for (bone_i = 0; bone_i < sklChunk.boneCount; bone_i++) {
+            BONE bone;
+        }
+    } BONES;
+} SKLCHUNK <bgcolor=0x00FF00>;
+
+typedef struct {
+    ushort  sepdChunkId;
+    ubyte   materialId;
+    ubyte   id;
+} MESH;
+
+typedef struct {
+    char    magic[4];
+    uint    size;
+    uint    meshCount;
+    ushort  unknownCount;
+    ushort  idCount;
+      
+    struct {    
+        local int mesh_i = 0;
+        for (mesh_i = 0; mesh_i < meshCount; mesh_i++) {
+            MESH mesh;
+        }
+    } MESHES;
+} MSHSCHUNK <bgcolor=0x0000FC>;
+
+typedef struct {
+    local uint sklmChunkOffset = FTell();
+
+    char magic[4];
+    uint size;
+    uint mshsChunkPointer;
+    uint shpChunkPointer;
+
+    FSeek(sklmChunkOffset + mshsChunkPointer);
+    MSHSCHUNK mshsChunk;
+} SKLMCHUNK <bgcolor=0x0000FF>;
+
+
+//-------------------
+// Start file
+//-------------------
+
+CMBCHUNK cmbChunk;
+
+if (cmbChunk.magic != "cmb ") {    Warning("File is not a CMB. Template stopped.");    return -1;}
+
+FSeek(cmbChunk.sklChunkPointer);
+SKLCHUNK sklChunk;
+
+FSeek(cmbChunk.sklmChunkPointer);
+SKLMCHUNK sklmChunk;

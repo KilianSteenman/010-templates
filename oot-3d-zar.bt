@@ -1,0 +1,66 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: zar
+//   Authors: Shadow-Link
+//   Version: 0.1
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    char    magic[4];    uint    size;    ushort  typeCount;
+    ushort  fileCount;    uint    fileTypesSectionOffset;
+    uint    fileMetaDataSectionOffset;
+    uint    dataSectionOffset;
+    char    queen[8];
+} ZARHEADER <bgcolor=cLtGray>;
+
+
+typedef struct {
+    uint fileCount;
+    int fileListOffset;
+    int typeNameOffset;
+    int unknown;
+} FILE_TYPE_SECTION <bgcolor=0xFF0000>;
+
+typedef struct {
+    uint fileSize;
+    uint fileNameOffset;
+
+    local int current_pos = FTell();
+    FSeek(fileNameOffset);
+    SetBackColor(0x00FF00);                
+    string fileName;
+    FSeek(current_pos);
+} FILE_META_DATA <bgcolor=0x0000FF>;
+
+//-------------------
+// Start file
+//-------------------
+
+ZARHEADER zarHeader;
+
+if (zarHeader.magic != "ZAR") {    Warning("File is not a ZAR. Template stopped.");    return -1;}
+
+FSeek(zarHeader.fileTypesSectionOffset);
+    
+struct {    
+    local int types_i = 0;
+    for (types_i = 0; types_i < zarHeader.typeCount; types_i++) {
+        FILE_TYPE_SECTION fileTypeSection;
+    }
+} FILE_TYPES;
+
+FSeek(zarHeader.fileMetaDataSectionOffset);
+
+struct {
+    //FILE_META_DATA fileMetaData[zarHeader.fileC
+    local int file_i = 0;
+    for (file_i = 0; file_i < zarHeader.fileCount; file_i++) {
+        FILE_META_DATA fileMetaData;
+    }
+} META_DATA;

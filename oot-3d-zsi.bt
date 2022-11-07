@@ -1,0 +1,134 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: ZSI
+//   Authors: Shadow-Link
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    char    magic[4];
+    char    queen[12];
+} HEADER <bgcolor=cLtGray>;
+
+//-------------------
+// Start file
+//-------------------
+
+HEADER header;
+
+if (header.magic != "ZSI") {    Warning("File is not an OOT ZSI. Template stopped.");    return -1;}
+
+typedef struct {
+    short x;
+    short y;
+    short z;
+} Z_Position;
+
+typedef struct {
+    uint offset <format=hex>;
+} Z_Offset;
+
+typedef struct {
+    short actorNumber;
+    Z_Position position;
+    short rotationX;
+    short rotationY;
+    short rotationZ;
+    short variable;
+} ZSI_Actor;
+
+typedef struct(byte actorCount) {
+    ZSI_Actor actors[actorCount];
+} ZSI_ActorList <bgcolor=0x00FF00>;
+
+typedef struct {
+    char mapName[68];
+} ZSI_Map;
+
+typedef struct(byte mapCount) {
+    ZSI_Map maps[mapCount];
+} ZSI_Maps <bgcolor=0x00FC00>;
+
+typedef struct {
+    byte meshType;
+    byte meshCount;
+    short unknown;
+    
+    uint meshTypeStartOffset;
+    uint meshTypeEndOffset;
+} ZSI_Mesh <bgcolor=0x00FA00>;
+
+typedef struct {
+    byte roomFrontIndex;
+    byte cameraFrontTransition;
+    byte roomBackIndex;
+    byte cameraBackTransition;
+
+    short actorNumber;
+    Z_Position position;
+    short rotationY;
+
+    short initVar;
+} ZSI_Transition_Actor <bgcolor=0x00F700>;
+
+typedef struct {
+    Z_Position boundsMin;
+    Z_Position boundsMax;
+
+    short vertexCount;
+    Z_Offset vertexOffset <format=hex>;
+    short polyCount;
+    Z_Offset polyOffset <format=hex>;
+    Z_Offset polyTypeOffset <format=hex>;
+    Z_Offset cameraOffset <format=hex>;
+    
+    short waterBoxCount;
+    Z_Offset waterBoxOffset <format=hex>;
+} ZSI_Collision <bgcolor=0x00E000>;
+
+typedef struct {
+    // Read full command for future parsing
+    local int currentOffset = FTell();
+    local uint64 fullCommand;
+    FSeek(currentOffset);
+
+    byte command <format=hex>;
+    byte commandValue;
+    ushort unknown;
+    uint commandOffset;
+
+    local int offset = FTell();
+    FSeek(commandOffset + 0x10);
+    switch(command) {
+        case 0x1:
+            ZSI_ActorList actorList(commandValue);
+            break;
+        case 0x3:
+            ZSI_Collision collosion;
+            break;
+        case 0x4:
+            ZSI_Maps maps(commandValue);
+            break;
+        case 0xE:
+            ZSI_Transition_Actor actors[commandValue];
+            break;
+        case 0x18: 
+            break;
+        case 0x0A:
+            ZSI_Mesh mesh;
+            break;
+    }
+    FSeek(offset);
+} COMMAND <bgcolor=0xFF0000>;
+
+COMMAND cmd;
+
+while(cmd.command != 0x14) {
+    COMMAND cmd;
+}
