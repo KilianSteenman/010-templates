@@ -16,14 +16,14 @@ typedef struct {
     uint    size;    uint    version;
     uint    unused;    char    modelName[16];
     uint    vertexCount;
-    uint    sklChunkPointer;
-    uint    matsChunkPointer;
-    uint    texChunkPointer;
-    uint    sklmChunkPointer;
-    uint    lutsChunkPointer;
-    uint    vatrChunkPointer;
-    uint    indicesDataPointer;
-    uint    textureDataPointer;
+    uint    sklChunkPointer <format=hex>;
+    uint    matsChunkPointer <format=hex>;
+    uint    texChunkPointer <format=hex>;
+    uint    sklmChunkPointer <format=hex>;
+    uint    lutsChunkPointer <format=hex>;
+    uint    vatrChunkPointer <format=hex>;
+    uint    indicesDataPointer <format=hex>;
+    uint    textureDataPointer <format=hex>;
 } CMBCHUNK <bgcolor=cLtGray>;
 
 typedef struct {
@@ -90,13 +90,14 @@ typedef struct {
 //-------------------
 // Start file
 //-------------------
+local uint fileOffset = FTell();
 
 CMBCHUNK cmbChunk;
 
 if (cmbChunk.magic != "cmb ") {    Warning("File is not a CMB. Template stopped.");    return -1;}
 
-FSeek(cmbChunk.sklChunkPointer);
+FSeek(cmbChunk.sklChunkPointer + fileOffset);
 SKLCHUNK sklChunk;
 
-FSeek(cmbChunk.sklmChunkPointer);
+FSeek(cmbChunk.sklmChunkPointer + fileOffset);
 SKLMCHUNK sklmChunk;

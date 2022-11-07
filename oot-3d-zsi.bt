@@ -56,12 +56,20 @@ typedef struct(byte mapCount) {
 } ZSI_Maps <bgcolor=0x00FC00>;
 
 typedef struct {
+    uint unknown1;
+    uint unknown2;
+
+    uint offsetModel1 <format=hex>;
+    uint offsetModel2 <format=hex>;
+} ZSI_Model_Ptr <bgcolor=0x00FA00>;
+
+typedef struct {
     byte meshType;
     byte meshCount;
     short unknown;
     
-    uint meshTypeStartOffset;
-    uint meshTypeEndOffset;
+    uint meshTypeStartOffset <format=hex>;
+    uint meshTypeEndOffset <format=hex>;
 } ZSI_Mesh <bgcolor=0x00FA00>;
 
 typedef struct {
@@ -133,6 +141,12 @@ typedef struct {
             break;
         case 0x0A:
             ZSI_Mesh mesh;
+            
+            FSeek(mesh.meshTypeStartOffset + 0x10);
+            ZSI_Model_Ptr modelPtr;
+            FSeek(modelPtr.offsetModel1 + 0x10);
+            #include "oot-3d-cmb.bt";
+            //CMBCHUNK cmbChunk;
             break;
     }
     FSeek(offset);
