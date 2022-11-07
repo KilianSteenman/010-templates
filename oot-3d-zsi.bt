@@ -92,6 +92,14 @@ typedef struct {
     Z_Offset waterBoxOffset <format=hex>;
 } ZSI_Collision <bgcolor=0x00E000>;
 
+
+typedef struct {
+    short actorNumber;
+    Z_Position position;
+    Z_Position rotation;
+    short initVar;
+} ZSI_SpawnPoint <bgcolor=0x006000>;
+
 typedef struct {
     // Read full command for future parsing
     local int currentOffset = FTell();
@@ -106,6 +114,9 @@ typedef struct {
     local int offset = FTell();
     FSeek(commandOffset + 0x10);
     switch(command) {
+        case 0x0:
+            ZSI_SpawnPoint spawnPoints[commandValue];
+            break;
         case 0x1:
             ZSI_ActorList actorList(commandValue);
             break;
