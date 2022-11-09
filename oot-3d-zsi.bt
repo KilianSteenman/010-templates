@@ -31,6 +31,18 @@ typedef struct {
 } Z_Position;
 
 typedef struct {
+    short collisionMaterial;
+    short a;
+    short b;
+    short c;
+    short normalX;
+    short normalY;
+    short normalZ;
+    int unknown;
+    short unknown2;
+} Z_Collision_Poly;
+
+typedef struct {
     uint offset <format=hex>;
 } Z_Offset;
 
@@ -90,14 +102,25 @@ typedef struct {
     Z_Position boundsMax;
 
     short vertexCount;
-    Z_Offset vertexOffset <format=hex>;
     short polyCount;
-    Z_Offset polyOffset <format=hex>;
-    Z_Offset polyTypeOffset <format=hex>;
-    Z_Offset cameraOffset <format=hex>;
+    short unknown1;
+    short unknown2;
+    int padding; // ?
     
-    short waterBoxCount;
-    Z_Offset waterBoxOffset <format=hex>;
+    uint vertexOffset <format=hex>;
+    uint polyOffset <format=hex>;
+    uint unknownOffset <format=hex>;
+    uint unknownOffset2 <format=hex>;
+
+
+    //Z_Offset vertexOffset <format=hex>;
+    //short polyCount;
+    //Z_Offset polyOffset <format=hex>;
+    //Z_Offset polyTypeOffset <format=hex>;
+    //Z_Offset cameraOffset <format=hex>;
+    
+    //short waterBoxCount;
+    //Z_Offset waterBoxOffset <format=hex>;
 } ZSI_Collision <bgcolor=0x00E000>;
 
 
@@ -107,6 +130,45 @@ typedef struct {
     Z_Position rotation;
     short initVar;
 } ZSI_SpawnPoint <bgcolor=0x006000>;
+
+typedef struct {
+    byte r;
+    byte g;
+    byte b;
+} Z_Color_RGB <bgcolor=0x0000F0>;
+
+typedef struct {
+    byte x;
+    byte y;
+    byte z;
+} Z_Direction <bgcolor=0x0000A0>;
+
+typedef struct {
+    Z_Color_RGB ambientColor;
+
+    Z_Direction light1Direction;
+    Z_Color_RGB light1Color;
+
+    Z_Direction light2Direction;
+    Z_Color_RGB light2Color;
+
+    Z_Color_RGB fog;
+
+    short blendParams;
+    short fogFar;
+} ZSI_Lighting <bgcolor=0x003000>;
+
+typedef struct {
+    // TODO: Figure out if this is correct
+    byte startPosition;
+    byte roomIndex;
+} ZSI_Entrance <bgcolor=0x003000>;
+
+
+typedef struct {
+    int unknown1;
+    int unknown2;
+} ZSI_Collision_Unknown_1 <bgcolor=0x003000>;
 
 typedef struct {
     // Read full command for future parsing
@@ -129,10 +191,25 @@ typedef struct {
             ZSI_ActorList actorList(commandValue);
             break;
         case 0x3:
-            ZSI_Collision collosion;
+            ZSI_Collision collision;
+
+            FSeek(collision.vertexOffset + 0x10);
+            Z_Position vertices[collision.vertexCount];
+
+            FSeek(collision.polyOffset + 0x10);
+            Z_Collision_Poly polys[collision.polyCount];
+
+            FSeek(collision.unknownOffset + 0x10);
+            ZSI_Collision_Unknown_1 collisionUnknown[collision.unknown1];
+            
+            FSeek(collision.unknownOffset2 + 0x10);
+            ZSI_Collision_Unknown_1 collisionUnknown2[collision.unknown2];
             break;
         case 0x4:
             ZSI_Maps maps(commandValue);
+            break;
+        case 0x6:
+            ZSI_Entrance entranceList[commandValue];
             break;
         case 0xE:
             ZSI_Transition_Actor actors[commandValue];
@@ -147,6 +224,9 @@ typedef struct {
             FSeek(modelPtr.offsetModel1 + 0x10);
             #include "oot-3d-cmb.bt";
             //CMBCHUNK cmbChunk;
+            break;
+        case 0x0F:
+            ZSI_Lighting lights[commandValue];
             break;
     }
     FSeek(offset);
