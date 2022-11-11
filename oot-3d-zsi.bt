@@ -103,24 +103,16 @@ typedef struct {
 
     short vertexCount;
     short polyCount;
-    short unknown1;
-    short unknown2;
-    int padding; // ?
+    short polyTypeCount;
+    short unknownCount;
+    short unknownCount2;
+    short padding; // ?
     
     uint vertexOffset <format=hex>;
     uint polyOffset <format=hex>;
+    uint polyTypeOffset <format=hex>;
     uint unknownOffset <format=hex>;
     uint unknownOffset2 <format=hex>;
-
-
-    //Z_Offset vertexOffset <format=hex>;
-    //short polyCount;
-    //Z_Offset polyOffset <format=hex>;
-    //Z_Offset polyTypeOffset <format=hex>;
-    //Z_Offset cameraOffset <format=hex>;
-    
-    //short waterBoxCount;
-    //Z_Offset waterBoxOffset <format=hex>;
 } ZSI_Collision <bgcolor=0x00E000>;
 
 
@@ -199,11 +191,11 @@ typedef struct {
             FSeek(collision.polyOffset + 0x10);
             Z_Collision_Poly polys[collision.polyCount];
 
-            FSeek(collision.unknownOffset + 0x10);
-            ZSI_Collision_Unknown_1 collisionUnknown[collision.unknown1];
+            FSeek(collision.polyTypeOffset + 0x10);
+            ZSI_Collision_Unknown_1 collisionUnknown[collision.polyTypeCount];
             
-            FSeek(collision.unknownOffset2 + 0x10);
-            ZSI_Collision_Unknown_1 collisionUnknown2[collision.unknown2];
+            FSeek(collision.unknownOffset + 0x10);
+            ZSI_Collision_Unknown_1 collisionUnknown2[collision.unknownCount];
             break;
         case 0x4:
             ZSI_Maps maps(commandValue);

@@ -84,8 +84,50 @@ typedef struct {
 
     FSeek(sklmChunkOffset + mshsChunkPointer);
     MSHSCHUNK mshsChunk;
+
+    FSeek(sklmChunkOffset + mshsChunkPointer);
+    MSHSCHUNK mshsChunk;
 } SKLMCHUNK <bgcolor=0x0000FF>;
 
+typedef struct {
+    byte unknown[348];
+    /*bool isFragmentLightingEnabled;    bool isVertexLightingEnabled;    bool isHemiSphereLightingEnabled;    bool isHemiSphereOcclusionEnabled;    bool isFaceCulling;    bool isPolygonOffsetEnabled;
+    ushort polygonOffset;
+    uint textureMappersUsed;
+    uint textureCoordsUsed;0010	MatTexture[3]	array of 3 textures0058	TextureCoords[3]	array of 3 textures00A0	RGBA	Emission Color00A4	RGBA	Ambient Color00A8	RGBA	Diffuse Color00AC	RGBA	Specular0 Color00B0	RGBA	Specular1 Color00B4	RGBA	Constant0 Color00B8	RGBA	Constant1 Color00BC	RGBA	Constant2 Color00C0	RGBA	Constant3 Color00C4	RGBA	Constant4 Color00C8	RGBA	Constant5 Color00CC	vector4	Buffer Color00DC	u16	Bump Texture00DE	u16	Bump Mode00E0	u16	IsBumpRenormalize00E2	u16	Padding00E4	u16	Layer Config00E6	u16	Padding00E8	u16	Fresnel Selector00EA	bool	IsClampHighLight00EB	bool	IsDistribution0Enabled00EC	bool	IsDistribution1Enabled00ED	bool	IsGeometricFactor0Enabled00EE	bool	IsGeometricFactor1Enabled00EF	bool	IsReflectionEnabled00F0	bool	ReflectanceRSamplerIsAbs00F1	byte	ReflectanceRSamplerIndex00F2	ushort	ReflectanceRSamplerInput00F4	float	ReflectanceRSamplerScale00F8	bool	ReflectanceGSamplerIsAbs00F9	byte	ReflectanceGSamplerIndex00FA	ushort	ReflectanceGSamplerInput00FC	float	ReflectanceGSamplerScale0100	bool	ReflectanceBSamplerIsAbs0101	byte	ReflectanceBSamplerIndex0102	ushort	ReflectanceBSamplerInput0104	float	ReflectanceBSamplerScale0108	bool	Distibution0SamplerIsAbs0109	byte	Distibution0SamplerIndex010A	ushort	Distibution0SamplerInput010C	float	Distibution0SamplerScale0110	bool	Distibution1SamplerIsAbs0111	byte	Distibution1SamplerIndex0112	ushort	Distibution1SamplerInput0114	float	Distibution1SamplerScale0118	bool	Fresnel1SamplerIsAbs0119	byte	Fresnel1SamplerIndex011A	ushort	Fresnel1SamplerInput011C	float	Fresnel1SamplerScale0120	u32	UsedTexEnvStages (Combiner Stages)0124	u16[6]	TexEnvStages Indices (-1 if unused)0130	bool	Alpha Test Enabled0131	u8	Alpha Reference Value0132	u16 (AlphaFunction)	Alpha Function0134	bool	DepthTestEnabled0135	bool	DepthWriteEnabled0136	u16 (DepthFunction)	Depth Test Function0138	u32	BlendMode013C	u16 (BlendingFactorSrc)	Alpha Source Function013E	u16 (BlendingFactorDest)	Alpha Destination Function0140	u32	Alpha Equation0144	u16	Color Source Function0146	u16	Color Destination Function0148	u32	Color Equation0158	Vector4	Blend Color*/
+} MATERIAL <bgcolor=0x0000E0>;
+
+typedef struct {
+    char magic[4];
+    uint size;
+    uint materialCount;
+    MATERIAL materials[materialCount];
+} MATSCHUNK <bgcolor=0x0000FA>;
+
+typedef struct(uint textureDataPointer) {
+    uint textureDataSize;
+    ushort mipMapCount;
+    byte isEtc1;
+    byte isCubeMap;
+    ushort width;
+    ushort height;
+    ushort textureColorFormat;
+    ushort textureDataType;
+    uint textureDataOffset;
+    char textureName[16];
+
+    local uint currentOffset = FTell();
+    FSeek(textureDataPointer + textureDataOffset);
+    byte textureData[textureDataSize];
+    FSeek(currentOffset);
+} TEXTURE <bgcolor=0xEF0000>;
+
+typedef struct(uint textureDataPointer) {
+    char magic[4];
+    uint size;
+    uint textureCount;
+    TEXTURE textures(textureDataPointer)[textureCount];
+} TEXCHUNK <bgcolor=0xFF0000>;
 
 //-------------------
 // Start file
@@ -98,6 +140,12 @@ if (cmbChunk.magic != "cmb ") {    Warning("File is not a CMB. Template stopped
 
 FSeek(cmbChunk.sklChunkPointer + fileOffset);
 SKLCHUNK sklChunk;
+
+FSeek(cmbChunk.matsChunkPointer + fileOffset);
+MATSCHUNK matsChunk;
+
+FSeek(cmbChunk.texChunkPointer + fileOffset);
+TEXCHUNK texChunk(cmbChunk.textureDataPointer);
 
 FSeek(cmbChunk.sklmChunkPointer + fileOffset);
 SKLMCHUNK sklmChunk;
