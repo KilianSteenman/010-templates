@@ -33,6 +33,13 @@ typedef struct {
 } VECTOR3;
 
 typedef struct {
+    float x;
+    float y;
+    float z;
+    float w;
+} VECTOR4;
+
+typedef struct {
     byte    id;
     byte    unknown;
     short   parentId;
@@ -75,6 +82,87 @@ typedef struct {
 } MSHSCHUNK <bgcolor=0x0000FC>;
 
 typedef struct {
+    uint offset;
+    float scale;
+    ushort dataType;
+    ushort mode;
+    VECTOR4 constant;
+} VERTEXLIST_ENTRY <bgcolor=0xAF0000>;
+
+typedef struct {
+    char magic[4];
+    uint size;
+    uint isVisible;
+    uint primitiveMode;
+    ushort dataType;
+    ushort unknown;
+    ushort vertexIndicesCount;
+    ushort startVertexIndex;
+} PRMCHUNK <bgcolor=0x0F0000>;
+
+typedef struct {
+    local uint startOffset = FTell();
+
+    char magic[4];
+    uint size;
+    uint prmChunkCount;
+    ushort skinningMode;
+    ushort boneIndicesCount;
+    uint boneIndicesOffset;
+    uint prmChunkOffset;
+    
+    local uint i = 0;
+    for(i = 0; i < prmChunkCount; i++) {
+        FSeek(startOffset + prmChunkOffset[i]);
+        PRMCHUNK prmChunk;
+    }
+} PRMSCHUNK <bgcolor=0x5F0000>;
+
+typedef struct {
+    local uint startOffset = FTell();
+    
+    char magic[4];
+    uint size;
+    ushort prmsChunkCount;
+    ushort flags;
+    VECTOR3 center;
+    VECTOR3 position;
+    VERTEXLIST_ENTRY positions;
+    VERTEXLIST_ENTRY normals;
+    VERTEXLIST_ENTRY colors;
+    VERTEXLIST_ENTRY texCoords1;
+    VERTEXLIST_ENTRY texCoords2;
+    VERTEXLIST_ENTRY texCoords3;
+    VERTEXLIST_ENTRY boneIndices;
+    VERTEXLIST_ENTRY boneWeights;
+    ushort boneDimension;
+    ushort generationFlags;
+    ushort prmsChunkOffset[prmsChunkCount];
+
+    local uint i = 0;
+    for(i = 0; i < prmsChunkCount; i++) {
+        FSeek(startOffset + prmsChunkOffset[i]);
+        PRMSCHUNK prmsChunk;
+    }
+} SEPDCHUNK <bgcolor=0xDF0000>;
+
+typedef struct {
+    local uint startOffset = FTell();
+
+    char magic[4];
+    uint size;
+    uint sepdChunkCount;
+    uint flags;
+    ushort sepdChunkPointers[sepdChunkCount];
+
+    local int i = 0;
+    for(i = 0; i < sepdChunkCount; i++) {
+        FSeek(startOffset + sepdChunkPointers[i]);
+        SEPDCHUNK sepdChunk;
+    }
+} SHPCHUNK <bgcolor=0xEF0000>;
+
+typedef struct {
     local uint sklmChunkOffset = FTell();
 
     char magic[4];
@@ -85,8 +173,8 @@ typedef struct {
     FSeek(sklmChunkOffset + mshsChunkPointer);
     MSHSCHUNK mshsChunk;
 
-    FSeek(sklmChunkOffset + mshsChunkPointer);
-    MSHSCHUNK mshsChunk;
+    FSeek(sklmChunkOffset + shpChunkPointer);
+    SHPCHUNK shpChunk;
 } SKLMCHUNK <bgcolor=0x0000FF>;
 
 typedef struct {
@@ -129,6 +217,32 @@ typedef struct(uint textureDataPointer) {
     TEXTURE textures(textureDataPointer)[textureCount];
 } TEXCHUNK <bgcolor=0xFF0000>;
 
+typedef struct {
+    char magic[4];
+    uint size;
+    uint lutCount;
+    uint unknown;
+} LUTSCHUNK <bgcolor=0x00F000>;
+
+typedef struct {
+    uint unknown;
+    uint offset;
+} VERTEXLISTDATA <bgcolor=0x00F0A0>;
+
+typedef struct {
+    char magic[4];
+    uint size;
+    uint maxVertexIndex;
+    VERTEXLISTDATA positions;
+    VERTEXLISTDATA normals;
+    VERTEXLISTDATA colors;
+    VERTEXLISTDATA textureCoords0;
+    VERTEXLISTDATA textureCoords1;
+    VERTEXLISTDATA textureCoords2;
+    VERTEXLISTDATA boneIndices;
+    VERTEXLISTDATA boneWeights;
+} VATRCHUNK <bgcolor=0x00F0F0>;
+
 //-------------------
 // Start file
 //-------------------
@@ -149,3 +263,9 @@ TEXCHUNK texChunk(cmbChunk.textureDataPointer);
 
 FSeek(cmbChunk.sklmChunkPointer + fileOffset);
 SKLMCHUNK sklmChunk;
+
+FSeek(cmbChunk.lutsChunkPointer + fileOffset);
+LUTSCHUNK lutsChunk;
+
+FSeek(cmbChunk.vatrChunkPointer + fileOffset);
+VATRCHUNK vatrChunk;
