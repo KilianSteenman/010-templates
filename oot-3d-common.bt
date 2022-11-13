@@ -1,0 +1,46 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+#ifndef OOT_3D_COMMON
+#define OOT_3D_COMMONtypedef struct {
+    short x;
+    short y;
+    short z;
+} Z_Position;
+
+typedef struct {
+    byte r;
+    byte g;
+    byte b;
+} Z_Color_RGB <bgcolor=0x0000F0>;
+
+typedef struct {
+    byte x;
+    byte y;
+    byte z;
+} Z_Direction <bgcolor=0x0000A0>;
+
+typedef struct {
+    float x;
+    float y;
+    float z;
+} VECTOR3;
+
+typedef struct {
+    float x;
+    float y;
+    float z;
+    float w;
+} VECTOR4;
+
+#endif

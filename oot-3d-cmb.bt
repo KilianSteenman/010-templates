@@ -11,6 +11,8 @@
 //   History: 
 //------------------------------------------------
 
+#include "oot-3d-common.bt"
+
 typedef struct {
     char    magic[4];
     uint    size;    uint    version;
@@ -25,19 +27,6 @@ typedef struct {
     uint    indicesDataPointer <format=hex>;
     uint    textureDataPointer <format=hex>;
 } CMBCHUNK <bgcolor=cLtGray>;
-
-typedef struct {
-    float x;
-    float y;
-    float z;
-} VECTOR3;
-
-typedef struct {
-    float x;
-    float y;
-    float z;
-    float w;
-} VECTOR4;
 
 typedef struct {
     byte    id;
@@ -225,11 +214,13 @@ typedef struct {
 } LUTSCHUNK <bgcolor=0x00F000>;
 
 typedef struct {
-    uint unknown;
+    uint size;
     uint offset;
 } VERTEXLISTDATA <bgcolor=0x00F0A0>;
 
 typedef struct {
+    local uint startOffset = FTell();
+
     char magic[4];
     uint size;
     uint maxVertexIndex;
@@ -241,31 +232,58 @@ typedef struct {
     VERTEXLISTDATA textureCoords2;
     VERTEXLISTDATA boneIndices;
     VERTEXLISTDATA boneWeights;
+
+    FSeek(startOffset + positions.offset);
+    byte positionData[positions.size];
+
+    FSeek(startOffset + normals.offset);
+    byte normalData[normals.size];
+
+    FSeek(startOffset + colors.offset);
+    byte colorData[colors.size];
+
+    FSeek(startOffset + textureCoords0.offset);
+    byte textureCoordData0[textureCoords0.size];
+
+    FSeek(startOffset + textureCoords1.offset);
+    byte textureCoordData1[textureCoords1.size];
+
+    FSeek(startOffset + textureCoords2.offset);
+    byte textureCoordData2[textureCoords2.size];
+
+    FSeek(startOffset + boneIndices.offset);
+    byte boneIndicesData[boneIndices.size];
+
+    FSeek(startOffset + boneWeights.offset);
+    byte boneWeightData[boneWeights.size];
+    
 } VATRCHUNK <bgcolor=0x00F0F0>;
 
 //-------------------
 // Start file
 //-------------------
-local uint fileOffset = FTell();
-
-CMBCHUNK cmbChunk;
-
-if (cmbChunk.magic != "cmb ") {    Warning("File is not a CMB. Template stopped.");    return -1;}
-
-FSeek(cmbChunk.sklChunkPointer + fileOffset);
-SKLCHUNK sklChunk;
-
-FSeek(cmbChunk.matsChunkPointer + fileOffset);
-MATSCHUNK matsChunk;
-
-FSeek(cmbChunk.texChunkPointer + fileOffset);
-TEXCHUNK texChunk(cmbChunk.textureDataPointer);
-
-FSeek(cmbChunk.sklmChunkPointer + fileOffset);
-SKLMCHUNK sklmChunk;
-
-FSeek(cmbChunk.lutsChunkPointer + fileOffset);
-LUTSCHUNK lutsChunk;
-
-FSeek(cmbChunk.vatrChunkPointer + fileOffset);
-VATRCHUNK vatrChunk;
+typedef struct {
+    local uint fileOffset = FTell();
+    
+    CMBCHUNK cmbChunk;
+    
+    if (cmbChunk.magic != "cmb ") {        Warning("File is not a CMB. Template stopped.");        return -1;    }
+    
+    FSeek(cmbChunk.sklChunkPointer + fileOffset);
+    SKLCHUNK sklChunk;
+    
+    FSeek(cmbChunk.matsChunkPointer + fileOffset);
+    MATSCHUNK matsChunk;
+    
+    FSeek(cmbChunk.texChunkPointer + fileOffset);
+    TEXCHUNK texChunk(cmbChunk.textureDataPointer);
+    
+    FSeek(cmbChunk.sklmChunkPointer + fileOffset);
+    SKLMCHUNK sklmChunk;
+    
+    FSeek(cmbChunk.lutsChunkPointer + fileOffset);
+    LUTSCHUNK lutsChunk;
+    
+    FSeek(cmbChunk.vatrChunkPointer + fileOffset);
+    VATRCHUNK vatrChunk;
+} CMBFILE;

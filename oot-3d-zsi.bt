@@ -11,6 +11,9 @@
 //   History: 
 //------------------------------------------------
 
+#include "oot-3d-common.bt"
+#include "oot-3d-cmb.bt"
+
 typedef struct {
     char    magic[4];
     char    queen[12];
@@ -23,12 +26,6 @@ typedef struct {
 HEADER header;
 
 if (header.magic != "ZSI") {    Warning("File is not an OOT ZSI. Template stopped.");    return -1;}
-
-typedef struct {
-    short x;
-    short y;
-    short z;
-} Z_Position;
 
 typedef struct {
     short collisionMaterial;
@@ -124,18 +121,6 @@ typedef struct {
 } ZSI_SpawnPoint <bgcolor=0x006000>;
 
 typedef struct {
-    byte r;
-    byte g;
-    byte b;
-} Z_Color_RGB <bgcolor=0x0000F0>;
-
-typedef struct {
-    byte x;
-    byte y;
-    byte z;
-} Z_Direction <bgcolor=0x0000A0>;
-
-typedef struct {
     Z_Color_RGB ambientColor;
 
     Z_Direction light1Direction;
@@ -155,7 +140,6 @@ typedef struct {
     byte startPosition;
     byte roomIndex;
 } ZSI_Entrance <bgcolor=0x003000>;
-
 
 typedef struct {
     int unknown1;
@@ -214,8 +198,7 @@ typedef struct {
             FSeek(mesh.meshTypeStartOffset + 0x10);
             ZSI_Model_Ptr modelPtr;
             FSeek(modelPtr.offsetModel1 + 0x10);
-            #include "oot-3d-cmb.bt";
-            //CMBCHUNK cmbChunk;
+            CMBFILE cmbFile;
             break;
         case 0x0F:
             ZSI_Lighting lights[commandValue];
