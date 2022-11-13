@@ -1,0 +1,328 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+#include "oot-3d-common.bt"
+
+typedef struct {
+    char    magic[4];
+    uint    size;    uint    version;
+    uint    unused;    char    modelName[16];
+    uint    vertexIndicesCount;
+    uint    sklChunkPointer <format=hex>;
+    uint    matsChunkPointer <format=hex>;
+    uint    texChunkPointer <format=hex>;
+    uint    sklmChunkPointer <format=hex>;
+    uint    lutsChunkPointer <format=hex>;
+    uint    vatrChunkPointer <format=hex>;
+    uint    indicesDataPointer <format=hex>;
+    uint    textureDataPointer <format=hex>;
+} CMBCHUNK <bgcolor=cLtGray>;
+
+typedef struct {
+    byte    id;
+    byte    unknown;
+    short   parentId;
+    VECTOR3 scale;
+    VECTOR3 rotation;
+    VECTOR3 translation;
+} BONE <bgcolor=0xFF0000>;
+
+typedef struct {
+    char    magic[4];    uint    size;    uint    boneCount;
+    uint    unknown;
+
+    struct {    
+        local int bone_i = 0;
+        for (bone_i = 0; bone_i < sklChunk.boneCount; bone_i++) {
+            BONE bone;
+        }
+    } BONES;
+} SKLCHUNK <bgcolor=0x00FF00>;
+
+typedef struct {
+    ushort  sepdChunkId;
+    ubyte   materialId;
+    ubyte   id;
+} MESH;
+
+typedef struct {
+    char    magic[4];
+    uint    size;
+    uint    meshCount;
+    ushort  unknownCount;
+    ushort  idCount;
+      
+    struct {    
+        local int mesh_i = 0;
+        for (mesh_i = 0; mesh_i < meshCount; mesh_i++) {
+            MESH mesh;
+        }
+    } MESHES;
+} MSHSCHUNK <bgcolor=0x0000FC>;
+
+typedef struct {
+    uint offset;
+    float scale;
+    ushort dataType;
+    ushort mode;
+    VECTOR4 constant;
+} VERTEXLIST_ENTRY <bgcolor=0xAF0000>;
+
+typedef struct {
+    char magic[4];
+    uint size;
+    uint isVisible;
+    uint primitiveMode;
+    ushort dataType;
+    ushort unknown;
+    ushort vertexIndicesCount;
+    ushort startVertexIndex;
+} PRMCHUNK <bgcolor=0x0F0000>;
+
+typedef struct {
+    local uint startOffset = FTell();
+
+    char magic[4];
+    uint size;
+    uint prmChunkCount;
+    ushort skinningMode;
+    ushort boneIndicesCount;
+    uint boneIndicesOffset;
+    uint prmChunkOffset;
+    
+    local uint i = 0;
+    for(i = 0; i < prmChunkCount; i++) {
+        FSeek(startOffset + prmChunkOffset[i]);
+        PRMCHUNK prmChunk;
+    }
+} PRMSCHUNK <bgcolor=0x5F0000>;
+
+typedef struct {
+    local uint startOffset = FTell();
+    
+    char magic[4];
+    uint size;
+    ushort prmsChunkCount;
+    ushort flags;
+    VECTOR3 center;
+    VECTOR3 position;
+    VERTEXLIST_ENTRY positions;
+    VERTEXLIST_ENTRY normals;
+    VERTEXLIST_ENTRY colors;
+    VERTEXLIST_ENTRY texCoords1;
+    VERTEXLIST_ENTRY texCoords2;
+    VERTEXLIST_ENTRY texCoords3;
+    VERTEXLIST_ENTRY boneIndices;
+    VERTEXLIST_ENTRY boneWeights;
+    ushort boneDimension;
+    ushort generationFlags;
+    ushort prmsChunkOffset[prmsChunkCount];
+
+    local uint i = 0;
+    for(i = 0; i < prmsChunkCount; i++) {
+        FSeek(startOffset + prmsChunkOffset[i]);
+        PRMSCHUNK prmsChunk;
+    }
+} SEPDCHUNK <bgcolor=0xDF0000>;
+
+typedef struct {
+    local uint startOffset = FTell();
+
+    char magic[4];
+    uint size;
+    uint sepdChunkCount;
+    uint flags;
+    ushort sepdChunkPointers[sepdChunkCount];
+
+    local int i = 0;
+    for(i = 0; i < sepdChunkCount; i++) {
+        FSeek(startOffset + sepdChunkPointers[i]);
+        SEPDCHUNK sepdChunk;
+    }
+} SHPCHUNK <bgcolor=0xEF0000>;
+
+typedef struct {
+    local uint sklmChunkOffset = FTell();
+
+    char magic[4];
+    uint size;
+    uint mshsChunkPointer;
+    uint shpChunkPointer;
+
+    FSeek(sklmChunkOffset + mshsChunkPointer);
+    MSHSCHUNK mshsChunk;
+
+    FSeek(sklmChunkOffset + shpChunkPointer);
+    SHPCHUNK shpChunk;
+} SKLMCHUNK <bgcolor=0x0000FF>;
+
+typedef struct {
+    ushort textureIndex;
+    ushort padding;
+    ushort minFilter;
+    ushort maxFilter;
+    ushort wrapModeS;
+    ushort wrapModeT;
+    float minLodBias;
+    float lodBias;
+    Z_Color_RGBA borderColor; 
+} MATTEXTURE <bgcolor=0xF0F0F0>;
+
+typedef struct {
+    ubyte matrixMode;
+    ubyte referenceCamera;
+    ubyte mappingMethod;
+    ubyte coordinateIndex;
+    VECTOR2 scale;
+    float rotation;
+    VECTOR2 translation;
+} TEXTURECOORDS <bgcolor=0xA0A0A0>;
+
+typedef struct {
+    //byte unknown[348];
+    byte isFragmentLightingEnabled;    byte isVertexLightingEnabled;    byte isHemiSphereLightingEnabled;    byte isHemiSphereOcclusionEnabled;    byte isFaceCulling;    byte isPolygonOffsetEnabled;
+    ushort polygonOffset;
+    uint textureMappersUsed;
+    uint textureCoordsUsed;
+    MATTEXTURE matTexture[3];
+    TEXTURECOORDS textureCoords[3];    Z_Color_RGBA EmissionColor;    Z_Color_RGBA AmbientColor;    Z_Color_RGBA DiffuseColor;    Z_Color_RGBA Specular0Color;    Z_Color_RGBA Specular1Color;    Z_Color_RGBA Constant0Color;    Z_Color_RGBA Constant1Color;    Z_Color_RGBA Constant2Color;    Z_Color_RGBA Constant3Color;    Z_Color_RGBA Constant4Color;    Z_Color_RGBA Constant5Color;    VECTOR4 bufferColor;
+    ushort bumpTexture;
+    ushort bumpMode;
+    ushort isBumpRenormalize;
+    ushort padding;
+    ushort layerConfig;
+    ushort padding2;
+    ushort fresnelSelector;    byte IsClampHighLight;    byte IsDistribution0Enabled;    byte IsDistribution1Enabled;    byte IsGeometricFactor0Enabled;    byte IsGeometricFactor1Enabled;    byte IsReflectionEnabled;    byte ReflectanceRSamplerIsAbs;    byte ReflectanceRSamplerIndex;    ushort	ReflectanceRSamplerInput;    float	ReflectanceRSamplerScale;    byte ReflectanceGSamplerIsAbs;    byte	ReflectanceGSamplerIndex;    ushort	ReflectanceGSamplerInput;    float	ReflectanceGSamplerScale;    byte ReflectanceBSamplerIsAbs;    byte	ReflectanceBSamplerIndex;    ushort	ReflectanceBSamplerInput;    float	ReflectanceBSamplerScale;    byte Distibution0SamplerIsAbs;    byte	Distibution0SamplerIndex;    ushort	Distibution0SamplerInput;    float	Distibution0SamplerScale;    byte Distibution1SamplerIsAbs;    byte	Distibution1SamplerIndex;    ushort	Distibution1SamplerInput;    float	Distibution1SamplerScale;    byte Fresnel1SamplerIsAbs;    byte	Fresnel1SamplerIndex;    ushort	Fresnel1SamplerInput;    float	Fresnel1SamplerScale;    uint UsedTexEnvStages;
+    ushort texEnvStageIndices[6];    byte isAlphaTestEnabled;    byte alphaReferenceValue;    ushort alphaFunction;    byte isDepthTestEnabled;    byte isDepthWriteEnabled;    ushort depthFunction; //0136	u16 (DepthFunction)	Depth Test Function    uint blendMode;    ushort alphaSourceFunction; //013C	u16 (BlendingFactorSrc)	Alpha Source Function    ushort alphaDestinationFunction;//013E	u16 (BlendingFactorDest)	Alpha Destination Function    uint alphaEquation; //0140	u32	Alpha Equation    ushort colorSourceFunction; // 0144	u16	Color Source Function    ushort colorDestinationFunction; // 0146	u16	Color Destination Function    uint colorEquation; // 0148	u32	Color Equation    VECTOR4 blendColor;
+} MATERIAL <bgcolor=0x0000E0>;
+
+typedef struct {
+    char magic[4];
+    uint size;
+    uint materialCount;
+    MATERIAL materials[materialCount];
+} MATSCHUNK <bgcolor=0x0000FA>;
+
+typedef struct(uint textureDataPointer) {
+    uint textureDataSize;
+    ushort mipMapCount;
+    byte isEtc1;
+    byte isCubeMap;
+    ushort width;
+    ushort height;
+    ushort textureColorFormat;
+    ushort textureDataType;
+    uint textureDataOffset;
+    char textureName[16];
+
+    local uint currentOffset = FTell();
+    FSeek(textureDataPointer + textureDataOffset);
+    byte textureData[textureDataSize];
+    FSeek(currentOffset);
+} TEXTURE <bgcolor=0xEF0000>;
+
+typedef struct(uint textureDataPointer) {
+    char magic[4];
+    uint size;
+    uint textureCount;
+    TEXTURE textures(textureDataPointer)[textureCount];
+} TEXCHUNK <bgcolor=0xFF0000>;
+
+typedef struct {
+    char magic[4];
+    uint size;
+    uint lutCount;
+    uint unknown;
+} LUTSCHUNK <bgcolor=0x00F000>;
+
+typedef struct {
+    uint size;
+    uint offset;
+} VERTEXLISTDATA <bgcolor=0x00F0A0>;
+
+typedef struct {
+    local uint startOffset = FTell();
+
+    char magic[4];
+    uint size;
+    uint maxVertexIndex;
+    VERTEXLISTDATA positions;
+    VERTEXLISTDATA normals;
+    VERTEXLISTDATA colors;
+    VERTEXLISTDATA textureCoords0;
+    VERTEXLISTDATA textureCoords1;
+    VERTEXLISTDATA textureCoords2;
+    VERTEXLISTDATA boneIndices;
+    VERTEXLISTDATA boneWeights;
+
+    FSeek(startOffset + positions.offset);
+    byte positionData[positions.size];
+
+    FSeek(startOffset + normals.offset);
+    byte normalData[normals.size];
+
+    FSeek(startOffset + colors.offset);
+    byte colorData[colors.size];
+
+    FSeek(startOffset + textureCoords0.offset);
+    byte textureCoordData0[textureCoords0.size];
+
+    FSeek(startOffset + textureCoords1.offset);
+    byte textureCoordData1[textureCoords1.size];
+
+    FSeek(startOffset + textureCoords2.offset);
+    byte textureCoordData2[textureCoords2.size];
+
+    FSeek(startOffset + boneIndices.offset);
+    byte boneIndicesData[boneIndices.size];
+
+    FSeek(startOffset + boneWeights.offset);
+    byte boneWeightData[boneWeights.size];
+    
+} VATRCHUNK <bgcolor=0x00F0F0>;
+
+typedef struct(uint indicesCount) {
+    ushort index[indicesCount];
+} INDICESDATA <bgcolor=0xF0F000>;
+
+//-------------------
+// Start file
+//-------------------
+typedef struct {
+    local uint fileOffset = FTell();
+    
+    CMBCHUNK cmbChunk;
+    
+    if (cmbChunk.magic != "cmb ") {        Warning("File is not a CMB. Template stopped.");        return -1;    }
+    
+    FSeek(cmbChunk.sklChunkPointer + fileOffset);
+    SKLCHUNK sklChunk;
+    
+    FSeek(cmbChunk.matsChunkPointer + fileOffset);
+    MATSCHUNK matsChunk;
+    
+    FSeek(cmbChunk.texChunkPointer + fileOffset);
+    TEXCHUNK texChunk(cmbChunk.textureDataPointer);
+    
+    FSeek(cmbChunk.sklmChunkPointer + fileOffset);
+    SKLMCHUNK sklmChunk;
+    
+    FSeek(cmbChunk.lutsChunkPointer + fileOffset);
+    LUTSCHUNK lutsChunk;
+    
+    FSeek(cmbChunk.vatrChunkPointer + fileOffset);
+    VATRCHUNK vatrChunk;
+
+    FSeek(cmbChunk.indicesDataPointer + fileOffset);
+    INDICESDATA indicesData(cmbChunk.vertexIndicesCount);
+} CMBFILE;

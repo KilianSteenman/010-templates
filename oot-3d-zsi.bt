@@ -12,7 +12,7 @@
 //------------------------------------------------
 
 #include "oot-3d-common.bt"
-#include "oot-3d-cmb.bt"
+#include "oot-3d-cmb-data.bt"
 
 typedef struct {
     char    magic[4];

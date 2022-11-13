@@ -25,10 +25,22 @@ typedef struct {
 } Z_Color_RGB <bgcolor=0x0000F0>;
 
 typedef struct {
+    byte r;
+    byte g;
+    byte b;
+    byte a;
+} Z_Color_RGBA <bgcolor=0x0000F0>;
+
+typedef struct {
     byte x;
     byte y;
     byte z;
 } Z_Direction <bgcolor=0x0000A0>;
+
+typedef struct {
+    float x;
+    float y;
+} VECTOR2;
 
 typedef struct {
     float x;
