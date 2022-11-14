@@ -13,6 +13,19 @@
 
 #include "oot-3d-common.bt"
 
+enum <ushort> PicaDataType { 
+    S8 = 0x1400,
+    U8 = 0x1401,
+    S16 = 0x1402,
+    U16 = 0x1403,
+    S32 = 0x1404,
+    U32 = 0x1405,
+    F32 = 0x1406,
+    UnsignedByte44DMP = 0x6760,
+    Unsigned4BitsDMP = 0x6761,	UnsignedShort4444 = 0x8033,	UnsignedShort5551 = 0x8034,
+    UnsignedShort565 = 0x8363
+};
+
 typedef struct {
     char    magic[4];
     uint    size;    uint    version;
@@ -73,7 +86,7 @@ typedef struct {
 typedef struct {
     uint offset;
     float scale;
-    ushort dataType;
+    PicaDataType dataType;
     ushort mode;
     VECTOR4 constant;
 } VERTEXLIST_ENTRY <bgcolor=0xAF0000>;
@@ -83,7 +96,7 @@ typedef struct {
     uint size;
     uint isVisible;
     uint primitiveMode;
-    ushort dataType;
+    PicaDataType dataType;
     ushort unknown;
     ushort vertexIndicesCount;
     ushort startVertexIndex;
