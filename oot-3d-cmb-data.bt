@@ -113,7 +113,14 @@ typedef struct {
     char magic[4];
     uint size;
     ushort prmsChunkCount;
-    ushort flags;
+    ushort hasPosition : 1;
+    ushort hasNormals : 1;
+    ushort hasColors : 1;
+    ushort hasUV0 : 1;
+    ushort hasUV1 : 1;
+    ushort hasUV2 : 1;
+    ushort hasIndices : 1;
+    ushort hasWeights : 1;
     VECTOR3 center;
     VECTOR3 position;
     VERTEXLIST_ENTRY positions;
@@ -125,7 +132,14 @@ typedef struct {
     VERTEXLIST_ENTRY boneIndices;
     VERTEXLIST_ENTRY boneWeights;
     ushort boneDimension;
-    ushort generationFlags;
+    ushort generatePosition : 1;
+    ushort generateNormals : 1;
+    ushort generateColors : 1;
+    ushort generateUV0 : 1;
+    ushort generateUV1 : 1;
+    ushort generateUV2 : 1;
+    ushort generateIndices : 1;
+    ushort generateWeights : 1;
     ushort prmsChunkOffset[prmsChunkCount];
 
     local uint i = 0;
