@@ -216,7 +216,6 @@ typedef struct {
 } TEXTURECOORDS <bgcolor=0xA0A0A0>;
 
 typedef struct {
-    //byte unknown[348];
     byte isFragmentLightingEnabled;    byte isVertexLightingEnabled;    byte isHemiSphereLightingEnabled;    byte isHemiSphereOcclusionEnabled;    byte isFaceCulling;    byte isPolygonOffsetEnabled;
     ushort polygonOffset;
     uint textureMappersUsed;
