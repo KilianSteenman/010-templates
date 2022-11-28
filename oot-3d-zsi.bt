@@ -112,7 +112,6 @@ typedef struct {
     uint unknownOffset2 <format=hex>;
 } ZSI_Collision <bgcolor=0x00E000>;
 
-
 typedef struct {
     short actorNumber;
     Z_Position position;
@@ -134,6 +133,10 @@ typedef struct {
     short blendParams;
     short fogFar;
 } ZSI_Lighting <bgcolor=0x003000>;
+
+typedef struct {
+    short id;
+} ZSI_Object <bgcolor=0x001000>;
 
 typedef struct {
     // TODO: Figure out if this is correct
@@ -199,6 +202,9 @@ typedef struct {
             ZSI_Model_Ptr modelPtr;
             FSeek(modelPtr.offsetModel1 + 0x10);
             CMBFILE cmbFile;
+            break;
+        case 0x0B:
+            ZSI_Object objects[commandValue];
             break;
         case 0x0F:
             ZSI_Lighting lights[commandValue];
