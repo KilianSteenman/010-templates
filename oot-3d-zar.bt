@@ -38,6 +38,13 @@ typedef struct {
     FSeek(current_pos);
 } FILE_META_DATA <bgcolor=0x0000FF>;
 
+typedef struct {
+    local int file_i = 0;
+    for (file_i = 0; file_i < zarHeader.fileCount; file_i++) {
+        FILE_META_DATA fileMetaData;
+    }
+} META_DATA;
+
 //-------------------
 // Start file
 //-------------------
@@ -57,13 +64,16 @@ struct {
 
 FSeek(zarHeader.fileMetaDataSectionOffset);
 
-struct {
-    local int file_i = 0;
-    for (file_i = 0; file_i < zarHeader.fileCount; file_i++) {
-        FILE_META_DATA fileMetaData;
-    }
-} META_DATA;
+META_DATA metaData;
 
 FSeek(zarHeader.fileDataPointerSectionOffset);
 
 uint fileDataOffsets[zarHeader.fileCount] <format=hex, bgcolor=0x0000AA>;
+
+local int file_i = 0;
+for (file_i = 0; file_i < zarHeader.fileCount; file_i++) {
+    struct {
+        FSeek(fileDataOffsets[file_i]);
+        byte fileData[metaData.fileMetaData[file_i].fileSize];
+    } FILE <bgcolor=0xAA00AA>;
+}
