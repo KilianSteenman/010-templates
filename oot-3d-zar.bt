@@ -15,7 +15,7 @@ typedef struct {
     char    magic[4];    uint    size;    ushort  typeCount;
     ushort  fileCount;    uint    fileTypesSectionOffset;
     uint    fileMetaDataSectionOffset;
-    uint    dataSectionOffset;
+    uint    fileDataPointerSectionOffset;
     char    queen[8];
 } ZARHEADER <bgcolor=cLtGray>;
 
@@ -58,9 +58,12 @@ struct {
 FSeek(zarHeader.fileMetaDataSectionOffset);
 
 struct {
-    //FILE_META_DATA fileMetaData[zarHeader.fileC
     local int file_i = 0;
     for (file_i = 0; file_i < zarHeader.fileCount; file_i++) {
         FILE_META_DATA fileMetaData;
     }
 } META_DATA;
+
+FSeek(zarHeader.fileDataPointerSectionOffset);
+
+uint fileDataOffsets[zarHeader.fileCount] <format=hex, bgcolor=0x0000AA>;
