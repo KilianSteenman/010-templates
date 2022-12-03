@@ -211,7 +211,13 @@ typedef struct {
             break;
     }
     FSeek(offset);
-} COMMAND <bgcolor=0xFF0000>;
+} COMMAND <bgcolor=0xFF0000, comment=CommandName>;
+
+string CommandName( COMMAND &cmd ){
+    switch( cmd.command )     {        case 0x00  : return "Start positions list";        case 0x01  : return "Actor list";        case 0x02  : return "Camera list";        case 0x03  : return "Collision header";
+        case 0x04  : return "Room list";        case 0x05  : return "Wind";        case 0x06  : return "Entrance list";        case 0x07  : return "Special object list";        case 0x08  : return "Room behaviour";        case 0x09  : return "Unused";        case 0x0A  : return "Mesh";        case 0x0B  : return "Object list";
+        case 0x0C  : return "Unused lighting settings";        case 0x0D  : return "Pathway list";        case 0x0E  : return "Transition actor list";        case 0x0F  : return "Lighting settings";        case 0x10  : return "Time settings";        case 0x11  : return "Skybox settings";        case 0x12  : return "Skybox modifiers";        case 0x13  : return "Exit list";        case 0x14  : return "End marker";        case 0x15  : return "Sound settings";        case 0x16  : return "Sound settings";        case 0x17  : return "Cutscene list";        case 0x18  : return "Alternate header list";        case 0x19  : return "Camera settings and world map";        default : return "unknown command " + cmd.command;    }
+}
 
 COMMAND cmd;
 

@@ -36,7 +36,10 @@ typedef struct {
     SetBackColor(0x00FF00);                
     string fileName;
     FSeek(current_pos);
-} FILE_META_DATA <bgcolor=0x0000FF>;
+} FILE_META_DATA <bgcolor=0x0000FF, comment=FileMetaDataComment>;
+
+string FileMetaDataComment( FILE_META_DATA &fileMetaData ){
+    return fileMetaData.fileName;}
 
 typedef struct {
     local int file_i = 0;
