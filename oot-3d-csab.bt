@@ -1,0 +1,54 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    char    magic[4];    uint    size;    uint    unknown1;
+    uint    unknown2;    uint    animationCount;
+    uint    animationOffsets[animationCount];
+} CSABHEADER <bgcolor=cLtGray>;
+
+typedef struct {
+    char    magic[4];
+} ANIM_NODE <bgcolor=0x00FF00>;
+
+typedef struct {
+    uint unknown1;
+    uint unknown2;
+    uint unknown3;
+    uint unknown4;
+    uint unknownCount;
+    uint unknown5;
+    uint animNodesCount;
+    uint boneCount;
+    
+    ushort boneIndices[boneCount];
+    ushort unknown; // Padding ?
+    uint animNodeOffsets[animNodesCount] <format=hex>;
+    
+    local int node_i = 0;
+    for (node_i = 0; node_i < animNodesCount; node_i++) {
+        FSeek(animNodeOffsets[node_i] + 0x18);
+        ANIM_NODE node;
+    }
+
+} ANIMATION <bgcolor=0xFF0000>;
+
+// File
+
+CSABHEADER header;
+
+local int file_i = 0;
+for (file_i = 0; file_i < header.animationCount; file_i++) {
+    FSeek(header.animationOffsets[file_i]);
+    ANIMATION animation;
+}

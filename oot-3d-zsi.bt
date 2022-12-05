@@ -44,13 +44,17 @@ typedef struct {
 } Z_Offset;
 
 typedef struct {
-    short actorNumber;
+    short actorNumber <format=hex>;
     Z_Position position;
     short rotationX;
     short rotationY;
     short rotationZ;
     short variable;
-} ZSI_Actor;
+} ZSI_Actor <comment=ActorComment>;
+
+string ActorComment( ZSI_Actor &actor ) {
+    return Str("0x%X", actor.actorNumber);
+}
 
 typedef struct(byte actorCount) {
     ZSI_Actor actors[actorCount];
