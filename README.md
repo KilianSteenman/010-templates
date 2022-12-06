@@ -1,2 +1,4 @@
 # oot-3d-bt
-Binary Templates for OOT 3D file format
+010 Binary Templates for several OOT 3D file formats.
+
+Based on the data available on cloudmodding.
