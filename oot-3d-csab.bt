@@ -18,16 +18,94 @@ typedef struct {
 } CSABHEADER <bgcolor=cLtGray>;
 
 typedef struct {
+    uint time;
+    float value;
+} KEYFRAME_LINEAR <bgcolor=0x0000AA>;
+
+typedef struct {
+    uint time;
+    float value;
+    float tangentIn;
+    float tangentOut;
+} KEYFRAME_HERMITE <bgcolor=0x0000AA>;
+
+typedef struct {
+    uint time;
+    float value;
+} KEYFRAME_INTEGER <bgcolor=0x0000AA>;
+
+typedef struct {
+    uint    type;
+    uint    numKeyframes;    uint    unk1;    uint    timeEnd;
+    
+    local uint frame_i = 0;
+    for(frame_i = 0; frame_i < numKeyframes; frame_i++) {
+        switch(type) {
+            case 0x1:
+                KEYFRAME_LINEAR keyFrame;
+                break;
+            case 0x2:
+                KEYFRAME_HERMITE keyFrame;
+                break;
+            case 0x3:
+                KEYFRAME_INTEGER keyFrame;
+                break;
+        }
+    }
+} TRACK <bgcolor=0x0000FF>;
+
+typedef struct {
+    local uint offset = FTell();
+
     char    magic[4];
-} ANIM_NODE <bgcolor=0x00FF00>;
+    ushort  boneIndex;    ushort  isRotationShort;    ushort  translationXOffset;    ushort  translationYOffset;    ushort  translationZOffset;    ushort  rotationXOffset;    ushort  rotationYOffset;    ushort  rotationZOffset;    ushort  scaleXOffset;    ushort  scaleYOffset;    ushort  scaleZOffset;
+    
+    ushort  zero;
+
+    if(translationXOffset != 0) {
+        FSeek(offset + translationXOffset);
+        TRACK translationX;
+    }
+    if(translationYOffset != 0) {
+        FSeek(offset + translationYOffset);
+        TRACK translationY;
+    }
+    if(translationZOffset != 0) {
+        FSeek(offset + translationZOffset);
+        TRACK translationZ;
+    }
+    if(rotationXOffset != 0) {
+        FSeek(offset + rotationXOffset);
+        TRACK rotationX;
+    }
+    if(rotationYOffset != 0) {
+        FSeek(offset + rotationYOffset);
+        TRACK rotationY;
+    }
+    if(rotationZOffset != 0) {
+        FSeek(offset + rotationZOffset);
+        TRACK rotationZ;
+    }
+    if(scaleXOffset != 0) {
+        FSeek(offset + scaleXOffset);
+        TRACK scaleX;
+    }
+    if(scaleYOffset != 0) {
+        FSeek(offset + scaleYOffset);
+        TRACK scaleY;
+    }
+    if(scaleZOffset != 0) {
+        FSeek(offset + scaleZOffset);
+        TRACK scaleZ;
+    }} ANIM_NODE <bgcolor=0x00FF00>;
 
 typedef struct {
     uint unknown1;
     uint unknown2;
     uint unknown3;
     uint unknown4;
-    uint unknownCount;
-    uint unknown5;
+    uint duration;
+    uint loopMode; // ?
     uint animNodesCount;
     uint boneCount;
     
