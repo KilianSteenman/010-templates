@@ -113,7 +113,10 @@ typedef struct {
     uint boneIndicesOffset;
     uint prmChunkOffset;
     
-    local uint i = 0;
+    FSeek(startOffset + boneIndicesOffset);
+    ushort boneIndices[boneIndicesCount];
+
+    i = 0;
     for(i = 0; i < prmChunkCount; i++) {
         FSeek(startOffset + prmChunkOffset[i]);
         PRMCHUNK prmChunk;
