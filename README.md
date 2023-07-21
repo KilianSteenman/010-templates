@@ -1,4 +1,6 @@
-# oot-3d-bt
-010 Binary Templates for several OOT 3D file formats.
+# 010 Editor Binary Templates
+010 Binary Templates for several file formats used in games.
 
-Based on the data available on cloudmodding.
+Includes:
+- Zelda OOT 3D (Based on the data available on cloudmodding.)
+- GTA: VC
