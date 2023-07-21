@@ -1,0 +1,33 @@
+//------------------------------------------------
+//--- 010 Editor v13.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    uint64 controls[44];
+} Controls;
+
+typedef struct {
+    uint32 sectionCount;    // Always 3
+    Controls primary;
+    Controls secondary;
+    Controls tertiary;
+    Controls Quaternary;
+    uint16 unknown;
+    char stuffmorestuffevenmo1[20];
+    char stuffmorestuffevenmo2[20];
+    char stuf[12];
+    byte unknown;
+    float mouseSensitivity;
+    byte isMouseInverted; // (0 = on, 1 = off)    byte isMouseSteeringEnabled; // (0 = on, 1 = off)    byte sfxVolume; // (1 = lowest setting, 65 = highest setting, 49 = default setting)    byte musicVolume; // (1 = lowest setting, 65 = highest setting, 49 = default setting)    byte mp3VolumeBoost; // (1 = lowest setting, 65 = highest setting, 0 = default setting)    byte radioStation;    byte speakersConfiguration; // (0 = 2 speakers, 1 = headphones, 2 = more than 2 speakers)    byte audioHardware;    byte isDynamicAcousticModelingEnabled; // (0 = off, 1 = on)    uint16 brightness; // (6 = lowest setting, 384 = highest setting, 256 = default)    float drawDistance; // (0.925 = lowest setting, 1.80 = highest setting, 1.20 = default setting)    byte isSubtitlesEnabled; // (0 = off, 1 = on)    byte isWideScreenEnabled; // (0 = off, 1 = on)    byte isFrameLimiterEnabled; // (0 = off, 1 = on)    byte screenResolution;    char skinName[256]; //	Skin name without file extension with null terminator (default skin = $$""\0)    byte controls; // (0 = standard, 1 = classic)    byte language; // (0 = English, 1 = French, 2 = German, 3 = Italian, 4 = Spanish, 5 = Japanese)    byte isHudMode; // (0 = off, 1 = on)    byte radarMode; // (0 = map & blips, 1 = blips only, 2 = off)    byte isMapLegendEnabled; // (0 = off, 1 = on)
+} SettingsFile;
+
+SettingsFile settingsFile;
